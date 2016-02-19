@@ -1,0 +1,108 @@
+#!/bin/bash
+
+# PW - simple password user account storage management based on CSV.
+
+# Copyright (c) 2016 Digidog (aka. diqidoq) - Released under GPL v3
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+Help(){
+cat << EOF
+
+Type pw <username> or pw <service> <username> or any other combination (e.g. pw <real neme> <cat>) to filter output.
+				
+Standart Output: 
+
+--------------------------------------------------------
+type c2 | service c3| uname c5 | email c9 | password c11
+--------------------------------------------------------
+
+Full Table:
+
+| 1   | 2    | 3   | 4    | 5    | 6    | 7  | 8   | 9 | 10    | 11 | 12   | 13   | 14    | 15   | 16  | 17 | 18 | 19  |
+|-----|------|-----|------|------|------|----|-----|---|-------|----|------|------|-------|------|-----|----|----|-----|
+| cat | type | srv | http | nick | name | id | crn | @ | login | pw | note | addr | btown | bday | age | Q  | A  | use |
+
+[!] For input you can use both directives (nr or label) to target the input column.
+[!] cat stands for categories. you can choose your own tags or a team based tag system for later filtering
+
+-i = input by simple form fields asking you: column=value column=value
+-a = add a row of raw csv line, e.g.: cat;type;srv;-;yournick;-;-;-;your@mail.de;loginname;pass;-;-;-;-;-;-;-;- 
+
+EOF
+	}
+
+if [[ "$@" ]] ; then
+
+FILENAME=pw.csv
+PWPATH=/media/digidog/portable/BFK/s/U/ts/pcuserdata/Documents/Registries_Logins/$FILENAME
+
+case $1 in
+	-h|--help)
+		Help		
+		exit 1
+	;;
+	-i|--input)
+		# we try to pipe the input into our pw.csv
+		# we need to check if the count of 19 columns is given to keep the db consistent
+		CAT=""; 	read -p "Categorie tags with comma: " CAT
+		TYPE="";	read -p "Type of Service: " TYPE
+		SRV="" ; 	read -p "Service Name: " SRV
+		HTTP="";	read -p "Link to the Login: " HTTP
+		NICK="";	read -p "Nickname/Username: " NICK
+		NAME="";	read -p "Real Name: " NAME
+		ID="";		read -p "ID in your unique Persona system: " ID
+		CRN="";		read -p "Customer Reference Number, if any: " CRN
+		EMAIL="";	read -p "Email Adress for Login: " EMAIL
+		LOGIN="";	read -p "Login (additional login name apart from nick, if needed, 
+		                     or provide login info type like: nick/email): " LOGIN
+		PW="";		read -p "Password: " PW
+		NOTE="";	read -p "Make any note to the account: " NOTE
+		ADDR="";	read -p "Address if divergent from Address of your unique Person: " ADDR
+		BTOWN="";	read -p "Birth town if divergent from unique Person connected to this account: " BTOWN
+		BDAY="";	read -p "Birthday if divergent from unique Person connected to this account: " BDAY
+		AGE="";		read -p "Age if divergent from unique Person connected to this account: " AGE
+		Q="";		read -p "Challenge Questions: " Q
+		A="";		read -p "Response Ansers in same order: " A
+		USE="";		read -p "Usage details, like notes but more specific to history: " USE
+		echo "$CAT;$TYPE;$SRV;$HTTP;$NICK;$NAME;$ID;$CRN;$EMAIL;$LOGIN;$PW;$NOTE;$ADDR;$BTOWN;$BDAY;$AGE;$Q;$A;$USE" >> $PWPATH
+	;;
+
+			# -a|--add)
+			# 	shift
+			#	echo "$@" >> $PWPATH
+			#	exit
+			#	;;
+	*)
+		if [[ "$2" ]] ; then
+		 grep --color -i $1 $PWPATH | grep --color -i $2 | cut -d ';' -f2,3,5,9,10,11 | column -ts ';'
+		else
+		 grep --color -i $1 $PWPATH | cut -d ';' -f2,3,5,9,10,11 | column -ts ';'
+		fi
+	;;
+esac
+
+else
+	echo "
+	PW - simple password user account storage management based on CSV.
+	Type -h or --help for help and options.
+	"
+fi
+
+exit 0
+
+# for index in "${!array[@]}"
+# do
+#  echo "$index ${array[index]}"
+# done
