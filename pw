@@ -17,22 +17,32 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+DataTable(){
+cat << EOF
+--------------
+| Full Table |
+--------------
+| 1   | 2    | 3   | 4    | 5    | 6    | 7  | 8   | 9 | 10    | 11 | 12   | 13   | 14    | 15   | 16  | 17 | 18 | 19  |
+|-----|------|-----|------|------|------|----|-----|---|-------|----|------|------|-------|------|-----|----|----|-----|
+| cat | type | srv | http | nick | name | id | crn | @ | login | pw | note | addr | btown | bday | age | Q  | A  | use |
+EOF
+}
+
 Help(){
 cat << EOF
 
 Type pw <username> or pw <service> <username> or any other combination (e.g. pw <real neme> <cat>) to filter output.
 				
 Standart Output: 
-
 --------------------------------------------------------
 type c2 | service c3| uname c5 | email c9 | password c11
 --------------------------------------------------------
 
-Full Table:
+EOF
 
-| 1   | 2    | 3   | 4    | 5    | 6    | 7  | 8   | 9 | 10    | 11 | 12   | 13   | 14    | 15   | 16  | 17 | 18 | 19  |
-|-----|------|-----|------|------|------|----|-----|---|-------|----|------|------|-------|------|-----|----|----|-----|
-| cat | type | srv | http | nick | name | id | crn | @ | login | pw | note | addr | btown | bday | age | Q  | A  | use |
+DataTable
+
+cat << EOF
 
 [!] For input you can use both directives (nr or label) to target the input column.
 [!] cat stands for categories. you can choose your own tags or a team based tag system for later filtering
@@ -56,27 +66,43 @@ case $1 in
 	-i|--input)
 		# we try to pipe the input into our pw.csv
 		# we need to check if the count of 19 columns is given to keep the db consistent
-		CAT=""; 	read -p "Categorie tags with comma: " CAT
-		TYPE="";	read -p "Type of Service: " TYPE
-		SRV="" ; 	read -p "Service Name: " SRV
-		HTTP="";	read -p "Link to the Login: " HTTP
-		NICK="";	read -p "Nickname/Username: " NICK
-		NAME="";	read -p "Real Name: " NAME
-		ID="";		read -p "ID in your unique Persona system: " ID
-		CRN="";		read -p "Customer Reference Number, if any: " CRN
-		EMAIL="";	read -p "Email Adress for Login: " EMAIL
-		LOGIN="";	read -p "Login (additional login name apart from nick, if needed, 
-		                     or provide login info type like: nick/email): " LOGIN
-		PW="";		read -p "Password: " PW
-		NOTE="";	read -p "Make any note to the account: " NOTE
-		ADDR="";	read -p "Address if divergent from Address of your unique Person: " ADDR
-		BTOWN="";	read -p "Birth town if divergent from unique Person connected to this account: " BTOWN
-		BDAY="";	read -p "Birthday if divergent from unique Person connected to this account: " BDAY
-		AGE="";		read -p "Age if divergent from unique Person connected to this account: " AGE
-		Q="";		read -p "Challenge Questions: " Q
-		A="";		read -p "Response Ansers in same order: " A
-		USE="";		read -p "Usage details, like notes but more specific to history: " USE
-		echo "$CAT;$TYPE;$SRV;$HTTP;$NICK;$NAME;$ID;$CRN;$EMAIL;$LOGIN;$PW;$NOTE;$ADDR;$BTOWN;$BDAY;$AGE;$Q;$A;$USE" >> $PWPATH
+		unset ROW
+		declare -a ROW
+		i=0
+		read -p "Categorie tags with comma: " ROW[$i] ; if [ -z "${ROW[$i]}" ] ; then ROW[$i]="-" ; fi ; ((i++))
+		read -p "Type of Service: " ROW[$i] ; if [ -z "${ROW[$i]}" ] ; then ROW[$i]="-" ; fi ; ((i++))
+		read -p "Service Name: " ROW[$i] ; if [ -z "${ROW[$i]}" ] ; then ROW[$i]="-" ; fi ; ((i++))
+		read -p "Link to the Login: " ROW[$i] ; if [ -z "${ROW[$i]}" ] ; then ROW[$i]="-" ; fi ; ((i++))
+		read -p "Nickname/Username: " ROW[$i] ; if [ -z "${ROW[$i]}" ] ; then ROW[$i]="-" ; fi ; ((i++))
+		read -p "Real Name: " ROW[$i] ; if [ -z "${ROW[$i]}" ] ; then ROW[$i]="-" ; fi ; ((i++))
+		read -p "ID in your unique Persona system: " ROW[$i] ; if [ -z "${ROW[$i]}" ] ; then ROW[$i]="-" ; fi ; ((i++))
+		read -p "Customer Reference Number, if any: " ROW[$i] ; if [ -z "${ROW[$i]}" ] ; then ROW[$i]="-" ; fi ; ((i++))
+		read -p "Email Adress for Login: " ROW[$i] ; if [ -z "${ROW[$i]}" ] ; then ROW[$i]="-" ; fi ; ((i++))
+		read -p "Login name or Login type (user-login/mail-login): " ROW[$i] ; if [ -z "${ROW[$i]}" ] ; then ROW[$i]="-" ; fi ; ((i++))
+		read -p "Password: " ROW[$i] ; if [ -z "${ROW[$i]}" ] ; then ROW[$i]="-" ; fi ; ((i++))
+		read -p "Additional notes/(info to the account: " ROW[$i] ; if [ -z "${ROW[$i]}" ] ; then ROW[$i]="-" ; fi ; ((i++))
+		read -p "Address if divergent from unique Person of account: " ROW[$i] ; if [ -z "${ROW[$i]}" ] ; then ROW[$i]="-" ; fi ; ((i++))
+		read -p "Birth town if divergent from unique Person of account: " ROW[$i] ; if [ -z "${ROW[$i]}" ] ; then ROW[$i]="-" ; fi ; ((i++))
+		read -p "Birthday if divergent from unique Person of account: " ROW[$i] ; if [ -z "${ROW[$i]}" ] ; then ROW[$i]="-" ; fi ; ((i++))
+		read -p "Age if divergent from unique Person of account: " ROW[$i] ; if [ -z "${ROW[$i]}" ] ; then ROW[$i]="-" ; fi ; ((i++))
+		read -p "Challenge questions (watch order): " ROW[$i] ; if [ -z "${ROW[$i]}" ] ; then ROW[$i]="-" ; fi ; ((i++))
+		read -p "Challenge responses (same order): " ROW[$i] ; if [ -z "${ROW[$i]}" ] ; then ROW[$i]="-" ; fi ; ((i++))
+		read -p "Usage info (like notes, but more specific to history): " ROW[$i] ; if [ -z "${ROW[$i]}" ] ; then ROW[$i]="-" ; fi
+		
+		IFS=';' ; ROWSET="${ROW[*]}" ; IFS=$' \t\n'
+		
+		DataTable
+		
+		echo "$ROWSET"
+		echo "-------"
+		read -p "Please check the entry fo possible errors. Does it look ok (y), or do we need ot break up (n)? <y/n>: " ynROW
+		
+		if [ "$ynROW" == "n" ] || [ -z "$ynROW" ] ; then
+		  Help
+		  exit 1
+		else
+		  echo "$ROWSET" >> $PWPATH 
+		fi
 	;;
 
 			# -a|--add)
@@ -86,9 +112,9 @@ case $1 in
 			#	;;
 	*)
 		if [[ "$2" ]] ; then
-		 grep --color -i $1 $PWPATH | grep --color -i $2 | cut -d ';' -f2,3,5,9,10,11 | column -ts ';'
+		 grep --color -i $1 $PWPATH | grep --color -i $2 | cut -d ';' -f2,3,5,9,10,11,12 | column -ts ';'
 		else
-		 grep --color -i $1 $PWPATH | cut -d ';' -f2,3,5,9,10,11 | column -ts ';'
+		 grep --color -i $1 $PWPATH | cut -d ';' -f2,3,5,9,10,11,12 | column -ts ';'
 		fi
 	;;
 esac
